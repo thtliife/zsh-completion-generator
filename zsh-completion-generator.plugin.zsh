@@ -10,28 +10,20 @@
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 ZSH_COMPLETION_GENERATOR_SRCDIR=${0:A:h}
 
-if [ -z $GENCOMPL_FPATH ]; then
-    ZSH_COMPLETION_GENERATOR_DIR="$ZSH_COMPLETION_GENERATOR_SRCDIR/completions"
-else
-    ZSH_COMPLETION_GENERATOR_DIR="$GENCOMPL_FPATH"
-fi
+ZSH_COMPLETION_GENERATOR_DIR="${GENCOMPL_FPATH:-$ZSH_COMPLETION_GENERATOR_SRCDIR/completions}"
+
 # don't override existing functions - append
 [[ -z "${fpath[(r)$ZSH_COMPLETION_GENERATOR_DIR]}" ]] && fpath=($fpath $ZSH_COMPLETION_GENERATOR_DIR)
 
 # which python to use
-local python
-if [[ -z $GENCOMPL_PY ]]; then
-    python=python
-else
-    python=$GENCOMPL_PY
-fi
+local python=${GENCOMPL_PY:-python}
+
 [[ ! -d $ZSH_COMPLETION_GENERATOR_DIR ]] && command mkdir -p $ZSH_COMPLETION_GENERATOR_DIR
 
 # a) define default programs here (or provide the below zstyle in zshrc):
 local -a programs
 # -a denotes there's array in the Zstyle
 zstyle -a :plugin:zsh-completion-generator programs programs
-(( ${#programs} )) || programs=( "ggrep" "groff -h" "nl" )
 
 # anonymous function, to have private variable scope
 () {
